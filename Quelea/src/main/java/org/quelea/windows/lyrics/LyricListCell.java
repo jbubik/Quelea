@@ -37,12 +37,13 @@ public class LyricListCell extends ListCell<TextSection> {
     private final VBox layout;
     private final Text header;
     private final Text lyrics;
-    boolean selected, focused;
+    private boolean selected, focused;
+    private SelectLyricsList selectLyricsList;
 
     public LyricListCell(SelectLyricsList sll) {
+        selectLyricsList = sll;
         layout = new VBox(3);
         header = new Text();
-        header.getStyleClass().add("text");
         header.setFont(Font.font("Verdana", FontWeight.BOLD, 11.5));
         lyrics = new Text();
         lyrics.getStyleClass().add("text");
@@ -80,20 +81,20 @@ public class LyricListCell extends ListCell<TextSection> {
         setText(null);
         String[] text = section.getText(false, false);
         StringBuilder builder = new StringBuilder();
+        final boolean oneLineMode = QueleaProperties.get().getOneLineMode();
         for (String str : text) {
             str = FormattedText.stripFormatTags(str);
             builder.append(str);
-            if (QueleaProperties.get().getOneLineMode()) {
+            if (oneLineMode) {
                 builder.append(" ");
             } else {
                 builder.append("\n");
             }
         }
         String str = builder.toString().trim();
-        //Uncomment to allow bible passages to display on multiple lines
-//                            if(!oneLineMode && !str.contains("\n")) {
-//                                str = str.replace(".", ".\n");
-//                            }
+        if (!oneLineMode) {
+            lyrics.wrappingWidthProperty().bind(selectLyricsList.widthProperty().subtract(15));
+        }
         lyrics.setText(str);
         String title = section.getTitle();
         if (title == null || title.isEmpty()) {
@@ -104,11 +105,11 @@ public class LyricListCell extends ListCell<TextSection> {
             }
             header.setText(section.getTitle());
             if (section.getTitle().toLowerCase().startsWith("chorus")) {
-                header.setFill(Color.DARKRED);
+                header.setFill(QueleaProperties.get().getUseDarkTheme() ? Color.RED : Color.DARKRED);
             } else if (section.getTitle().toLowerCase().startsWith("verse")) {
-                header.setFill(Color.DARKBLUE);
+                header.setFill(QueleaProperties.get().getUseDarkTheme() ? Color.LIGHTBLUE : Color.DARKBLUE);
             } else {
-                header.setFill(Color.DARKGREEN);
+                header.setFill(QueleaProperties.get().getUseDarkTheme() ? Color.LIGHTGREEN : Color.DARKGREEN);
             }
         }
         lyrics.getStyleClass().add("cell-text");

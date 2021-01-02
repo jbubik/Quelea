@@ -105,6 +105,10 @@ public class LivePanel extends LivePreviewPanel {
         Label headerLabel = new Label(LabelGrabber.INSTANCE.getLabel("live.heading"));
         headerLabel.setStyle("-fx-font-weight: bold;");
         header.getItems().add(headerLabel);
+        ImageView liveIcon = new ImageView(new Image("file:icons/recordingssettingsicon.png"));
+        liveIcon.setFitHeight(10);
+        liveIcon.setFitWidth(10);
+        header.getItems().add(liveIcon);
         loop = new ToggleButton(LabelGrabber.INSTANCE.getLabel("loop.label") + ":");
         loop.setOnMouseClicked(e -> {
             if (isLoopSelected()) {
@@ -473,6 +477,7 @@ public class LivePanel extends LivePreviewPanel {
         HashSet<DisplayCanvas> canvases = new HashSet<>();
         canvases.addAll(getCanvases());
         for (DisplayCanvas canvas : canvases) {
+            canvas.setLogoDisplaying(logo.isSelected());
             canvas.setBlacked(black.isSelected());
             if (canvas.isStageView() && !QueleaProperties.get().getClearStageWithMain()) {
                 canvas.setCleared(false);
